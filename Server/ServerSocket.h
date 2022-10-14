@@ -11,10 +11,10 @@ public:
 	explicit ServerSocket (const std::string& socket_path);
 	~ServerSocket() override;
 
-	const ServerSocket& operator << ( const std::string& ) const;
-	const ServerSocket& operator >> ( std::string& ) const;
+	const ServerSocket& operator << (const std::string&) const;
+	const ServerSocket& operator >> (std::string&) const;
 
-	void accept ( ServerSocket& );
+	void accept (ServerSocket&);
 
 };
 

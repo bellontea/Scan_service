@@ -7,7 +7,7 @@ ServerSocket::ServerSocket(const std::string& socket_path) : Socket(socket_path)
 		throw SocketException("Could not create server socket.");
 
 	if (!Socket::bind())
-		throw SocketException("Could not bind to port.");
+		throw SocketException("Could not bind to socket address.");
 
 	if (!Socket::listen())
 		throw SocketException ("Could not listen to socket.");
@@ -16,8 +16,8 @@ ServerSocket::ServerSocket(const std::string& socket_path) : Socket(socket_path)
 ServerSocket::~ServerSocket()
 = default;
 
-
-const ServerSocket& ServerSocket::operator << ( const std::string& s ) const
+/* Перегружаем оператор для удобной отправки данных */
+const ServerSocket& ServerSocket::operator << (const std::string& s) const
 {
 	if (!Socket::send(s))
 		throw SocketException("Could not write to socket.");
@@ -25,8 +25,8 @@ const ServerSocket& ServerSocket::operator << ( const std::string& s ) const
 	return *this;
 }
 
-
-const ServerSocket& ServerSocket::operator >> ( std::string& s ) const
+/* Перегружаем оператор для удобного получения данных */
+const ServerSocket& ServerSocket::operator >> (std::string& s) const
 {
 	if (!Socket::recv(s))
 		throw SocketException("Could not read from socket.");
@@ -34,9 +34,10 @@ const ServerSocket& ServerSocket::operator >> ( std::string& s ) const
 	return *this;
 }
 
+
 void ServerSocket::accept(ServerSocket& sock)
 {
-	if (! Socket::accept ( sock ))
-		throw SocketException( "Could not accept socket.");
+	if (! Socket::accept (sock))
+		throw SocketException("Could not accept socket.");
 }
 

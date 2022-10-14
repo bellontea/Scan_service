@@ -8,5 +8,5 @@ add_subdirectory(../Socket socket_lib)
 include_directories(${SOCKET_FILES})
 
 set(SRCS main.cpp ServerSocket.h ServerSocket.cpp Scan.h Scan.cpp)
-add_executable(server ${SRCS})
-target_link_libraries(server socket_lib)
+add_executable(scan_service ${SRCS})
+target_link_libraries(scan_service socket_lib)

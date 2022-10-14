@@ -4,14 +4,15 @@
 #include <fcntl.h>
 #include <iostream>
 
-
+/* Класс для реализации сокета в linux. Используются unix sockets с абстрактным путем */
 Socket::Socket(const std::string& socket_name) : socket_fd(-1)
 {
-	memset (&socket_addr,0,sizeof(socket_addr));
+	memset(&socket_addr,0,sizeof(socket_addr));
 	socket_addr.sun_family = AF_UNIX;
+	/* Установление первого байта значением 0 в пути позволяет сделать путь абстрактным */
 	socket_addr.sun_path[0] = 0;
 	std::strcpy (socket_path, socket_name.c_str());
-	strcpy(socket_addr.sun_path+1,socket_path);
+	strcpy(socket_addr.sun_path + 1,socket_path);
 	addr_len = sizeof(socket_addr.sun_family) + sizeof(socket_path);
 }
 
@@ -21,44 +22,40 @@ Socket::~Socket()
 		::close(socket_fd);
 }
 
+/* Создание сокета */
 bool Socket::create()
 {
 	socket_fd = socket (AF_UNIX,SOCK_SEQPACKET,0);
 	if (!is_valid())
 		return false;
 	return true;
-
 }
 
-
-
+/* Привязывание сокету имени (адреса). После этого клиент сможет его увидеть */
 bool Socket::bind()
 {
 	if (!is_valid())
 		return false;
 
-	int bind_return = ::bind(socket_fd,(struct sockaddr*) &socket_addr,addr_len);
-	if (bind_return == -1)
+	if (::bind(socket_fd,(struct sockaddr*) &socket_addr,addr_len) == -1)
 		return false;
 
 	return true;
 }
 
-
+/* Ввод сокета в режим ожидания (прослушивания запросов на сокете) */
 bool Socket::listen() const
 {
 	if (!is_valid())
 		return false;
 
-	int listen_return = ::listen (socket_fd, MAXCONNECTIONS);
-
-	if (listen_return == -1)
+	if (::listen(socket_fd, MAXCONNECTIONS) == -1)
 		return false;
 
 	return true;
 }
 
-
+/* Функция для принятия связи на сокет */
 bool Socket::accept(Socket& new_socket) const
 {
 	int addr_length = sizeof(sockaddr_un);
@@ -66,19 +63,20 @@ bool Socket::accept(Socket& new_socket) const
 
 	if (new_socket.socket_fd <= 0 )
 		return false;
+
 	return true;
 }
 
-
+/* Запись данных в сокет */
 bool Socket::send (std::string s) const
 {
-	int status = ::send(socket_fd, s.c_str(), s.size(), MSG_NOSIGNAL);
-	if (status == -1)
+	if (::send(socket_fd, s.c_str(), s.size(), MSG_NOSIGNAL) == -1)
 		return false;
+
 	return true;
 }
 
-
+/* Чтения данных из сокета */
 int Socket::recv(std::string& s) const
 {
 	char buf[MAXRECV + 1];
@@ -99,29 +97,14 @@ int Socket::recv(std::string& s) const
 	return status;
 }
 
+/* Подключение к сокету */
 bool Socket::connect()
 {
 	if (!is_valid())
 		return false;
 
-	int status = ::connect(socket_fd, ( sockaddr * ) &socket_addr, addr_len);
-
-	if (status == 0)
+	if (::connect(socket_fd, (sockaddr *) &socket_addr, addr_len) == 0)
 		return true;
+
 	return false;
-}
-
-void Socket::set_non_blocking(bool b)
-{
-	int flags;
-	flags = fcntl(socket_fd,F_GETFL);
-	if (flags < 0)
-		return;
-
-	if (b)
-		flags = (flags | O_NONBLOCK);
-	else
-		flags = (flags & ~O_NONBLOCK );
-
-	fcntl(socket_fd,F_SETFL, flags);
 }

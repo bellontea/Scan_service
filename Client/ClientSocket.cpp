@@ -7,7 +7,7 @@ ClientSocket::ClientSocket(const std::string& socket_path) : Socket(socket_path)
 		throw SocketException( "Could not create client socket.");
 
 	if (!Socket::connect())
-		throw SocketException ("Could not bind to port.");
+		throw SocketException ("Could not bind to socket address.");
 }
 
 const ClientSocket& ClientSocket::operator << (const std::string& s) const

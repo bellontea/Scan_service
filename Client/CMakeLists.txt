@@ -8,6 +8,6 @@ add_subdirectory(../Socket socket_lib)
 include_directories(${SOCKET_FILES})
 
 set(SRCS_CLIENT main.cpp ClientSocket.cpp ClientSocket.h)
-add_executable(client ${SRCS_CLIENT})
-target_link_libraries(client socket_lib)
+add_executable(scan_util ${SRCS_CLIENT})
+target_link_libraries(scan_util socket_lib)
 

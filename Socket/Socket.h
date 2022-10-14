@@ -9,6 +9,8 @@
 #include <string>
 #include <arpa/inet.h>
 
+#define SOCKETPATH "socket"
+
 const int MAXCONNECTIONS = 20;
 const int MAXRECV = 500;
 
@@ -19,22 +21,20 @@ public:
 	Socket ()= default;
 	virtual ~Socket();
 
-	// Server initialization
+	/* Инициализация сервера */
 	bool create();
 	bool bind ();
 	bool listen() const;
 	bool accept (Socket&) const;
 
-	// Client initialization
+	/* Инициализация клиента */
 	bool connect ();
 
-	// Data Transimission
+	/* Передача информации */
 	bool send (std::string) const;
 	int recv (std::string&) const;
 
-
-	void set_non_blocking (bool);
-
+	/* Проверка валидности сокета */
 	bool is_valid() const { return socket_fd != -1; }
 
 

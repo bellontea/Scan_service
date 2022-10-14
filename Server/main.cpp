@@ -10,21 +10,25 @@ int main()
 
 	try
 	{
-		// Create the socket
-		ServerSocket server("serverSocket");
+		// Создание сокета
+		ServerSocket server(SOCKETPATH);
 
 		while (true)
 		{
+			// Создание сокета для клиента
 			ServerSocket new_sock;
-			server.accept (new_sock);
+			// Принятие поделючения от клиента
+			server.accept(new_sock);
 
 			std::string data;
+			// Ожидание поступления данных
 			while (true)
 			{
 				new_sock >> data;
 				if (!data.empty())
 					break;
 			}
+			// Запуск сканирования и передача результата клиенту
 			Scan ob(data);
 			new_sock << ob.start_scan();
 		}
